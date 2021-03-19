@@ -768,9 +768,9 @@ defmodule Oasis.ValidatorTest do
     end
 
     # for ex_json_schema 0.8.0-rc1
-    #assert_raise FunctionClauseError, ~r/no function clause matching/, fn ->
+    # assert_raise FunctionClauseError, ~r/no function clause matching/, fn ->
     #  Validator.parse_and_validate!(param, "query", name, input)
-    #end
+    # end
   end
 
   test "parse urlencoded" do
