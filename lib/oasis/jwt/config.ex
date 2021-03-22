@@ -6,7 +6,7 @@ defmodule Oasis.Jwt.Config do
 
   # default 30 min
   def access_token_exp, do: Keyword.get(@config, :access_token_exp, 30 * 60)
-  # default 3 day
 
+  # default 3 day
   def refresh_token_exp, do: Keyword.get(@config, :refresh_token_exp, 3 * 24 * 60 * 60)
 end

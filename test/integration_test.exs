@@ -533,7 +533,6 @@ defmodule Oasis.IntegrationTest do
     assert response.status == 401
   end
 
-
   test "validate with valid authorization header", %{url: url} do
     start_supervised!({Finch, name: TestFinch})
 
