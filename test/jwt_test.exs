@@ -1,34 +1,20 @@
 defmodule Oasis.JwtTest do
   use ExUnit.Case, async: false
 
-  alias Oasis.Test.Support.{
-    AccessTokenSimple,
-    AccessTokenCustomClaimAlwaysFalse,
-    AccessTokenCustomClaimAlwaysTrue
-  }
+  alias Oasis.Jwt.{AccessToken, RefreshToken}
 
   test "verify success" do
-    {:ok, token, _claims} = AccessTokenSimple.generate_and_sign(%{test_extra: 1})
-    {:ok, claims_verify} = AccessTokenSimple.verify_and_validate(token)
+    {:ok, token, _claims} = AccessToken.generate_and_sign(%{test_extra: 1})
+    {:ok, claims_verify} = AccessToken.verify_and_validate(token)
     assert Map.fetch!(claims_verify, "test_extra") == 1
   end
 
   test "verify exp timeout" do
-    {:ok, token, _claims} = AccessTokenSimple.generate_and_sign()
+    {:ok, access_token, _claims} = AccessToken.generate_and_sign()
+    {:ok, refresh_token, _claims} = RefreshToken.generate_and_sign()
     Process.sleep(1_100)
-    {:error, messages} = AccessTokenSimple.verify_and_validate(token)
+    {:error, messages} = AccessToken.verify_and_validate(access_token)
     assert Keyword.fetch!(messages, :claim) == "exp"
-  end
-
-  test "custom claim verify fail" do
-    {:ok, token, _claims} = AccessTokenCustomClaimAlwaysFalse.generate_and_sign()
-    {:error, error} = AccessTokenCustomClaimAlwaysFalse.verify_and_validate(token)
-    assert error[:claim] == "always_fail"
-  end
-
-  test "custom claim verify success" do
-    {:ok, token, _claims} = AccessTokenCustomClaimAlwaysTrue.generate_and_sign()
-    {:ok, claims_verify} = AccessTokenCustomClaimAlwaysTrue.verify_and_validate(token)
-    assert Map.fetch!(claims_verify, "always_success") == "always_success_value"
+    {:ok, claims_verify} = RefreshToken.verify_and_validate(refresh_token)
   end
 end

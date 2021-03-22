@@ -524,4 +524,45 @@ defmodule Oasis.IntegrationTest do
     # parse query parameters
     assert %{"id" => 1, "relation_ids" => ["1", "2", "3"]} == body["query_params"]
   end
+
+  test "validate with empty authorization header", %{url: url} do
+    start_supervised!({Finch, name: TestFinch})
+
+    url = "#{url}/test_token"
+    assert {:ok, response} = Finch.build(:get, url) |> Finch.request(TestFinch)
+    assert response.status == 401
+  end
+
+
+  test "validate with valid authorization header", %{url: url} do
+    start_supervised!({Finch, name: TestFinch})
+
+    {:ok, token, _claims} = Oasis.Jwt.AccessToken.generate_and_sign(%{test_extra: 1})
+
+    url = "#{url}/test_token"
+
+    headers = [{"Authorization", "Bearer #{token}"}]
+
+    assert {:ok, response} =
+             Finch.build(:get, url, headers)
+             |> Finch.request(TestFinch)
+
+    assert response.status == 200
+  end
+
+  test "validate with invalid authorization header", %{url: url} do
+    start_supervised!({Finch, name: TestFinch})
+
+    {:ok, token, _claims} = Oasis.Jwt.AccessToken.generate_and_sign(%{test_extra: 1})
+
+    url = "#{url}/test_token"
+
+    headers = [{"authorization", "Bearer #{token}1"}]
+
+    assert {:ok, response} =
+             Finch.build(:get, url, headers)
+             |> Finch.request(TestFinch)
+
+    assert response.status == 401
+  end
 end

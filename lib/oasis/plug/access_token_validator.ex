@@ -16,7 +16,9 @@ defmodule Oasis.Plug.AccessTokenValidator do
 
   @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, _opts) do
-    case get_req_header(conn, "authorization") do
+    conn
+    |> get_req_header("authorization")
+    |> case do
       ["Bearer " <> token] ->
         verify_token(conn, token)
 
