@@ -1,5 +1,5 @@
 defmodule Oasis.Jwt.Config do
-  @config Application.fetch_env!(:oasis, :jwt)
+  @config Application.get_env(:oasis, :jwt, [])
 
   def iss, do: Keyword.get(@config, :iss, "oasis")
   def aud, do: Keyword.get(@config, :aud, "oasis")
