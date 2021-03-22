@@ -1,4 +1,4 @@
-defmodule Oasis.Jwt do
+defmodule Oasis.Jwt.RefreshToken do
   require Logger
 
   @callback add_custom_claims(Joken.token_config()) :: Joken.token_config()
@@ -11,10 +11,11 @@ defmodule Oasis.Jwt do
           ] do
       @iss Keyword.get(opts, :iss, "oasis")
       @aud Keyword.get(opts, :aud, "oasis")
-      @default_exp Keyword.get(opts, :default_exp, 30 * 60)
+      # default 3 day
+      @default_exp Keyword.get(opts, :default_exp, 3 * 24 * 60 * 60)
 
-      use Joken.Config
-
+      use Joken.Config,
+        default_signer: :access_token_secret_key
 
       @impl true
       def token_config do
